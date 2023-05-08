@@ -18,13 +18,13 @@ apt-get -y --force-yes install nginx fcgiwrap libnginx-mod-http-fancyindex fuse 
 # install data files and config files
 systemctl stop nginx.service &> /dev/null || true
 mkdir -p /var/www
-umount /var/www/html/TeslaCam &> /dev/null || true
+umount /var/www/html/videos &> /dev/null || true
 rm -rf /var/www/html
 cp -r "$SOURCE_DIR/teslausb-www/html" /var/www/
 ln -s /boot/teslausb-headless-setup.log /var/www/html/
 ln -s /mutable/archiveloop.log /var/www/html/
 ln -s /tmp/diagnostics.txt /var/www/html/
-mkdir /var/www/html/TeslaCam
+mkdir /var/www/html/videos
 cp -rf "$SOURCE_DIR/teslausb-www/teslausb.nginx" /etc/nginx/sites-available
 ln -sf /etc/nginx/sites-available/teslausb.nginx /etc/nginx/sites-enabled/default
 
@@ -57,7 +57,7 @@ EOF
 chmod +x /sbin/mount.ctts
 
 sed -i '/mount.ctts/d' /etc/fstab
-echo "mount.ctts#/mutable/TeslaCam /var/www/html/TeslaCam fuse defaults,nofail,x-systemd.requires=/mutable 0 0" >> /etc/fstab
+echo "mount.ctts#/mutable /var/www/html/videos fuse defaults,nofail,x-systemd.requires=/mutable 0 0" >> /etc/fstab
 
 sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 

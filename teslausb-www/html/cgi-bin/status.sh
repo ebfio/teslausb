@@ -3,7 +3,7 @@
 # SC2016 shellcheck wants double quotes for the free/used space calculation
 # below, but that requires additional ugly escaping
 
-if [[ -e /sys/kernel/config/usb_gadget/teslausb ]]
+if [[ -e /sys/kernel/config/usb_gadget/rivianusb ]]
 then
   drives_active=yes
 else

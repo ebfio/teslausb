@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -e "/sys/kernel/config/usb_gadget/teslausb/" ]
+if [ -e "/sys/kernel/config/usb_gadget/rivianusb/" ]
 then
   sudo /root/bin/disable_gadget.sh
 else

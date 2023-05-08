@@ -293,8 +293,8 @@ export WIFIPASS='your_pass'
 #export CPU_GOVERNOR=conservative
 
 # Uncomment and change if you want setup scripts to be pulled
-# from a different repo than github.com/marcone/teslausb
-# export REPO=marcone
+# from a different repo than github.com/ebfio/teslausb
+# export REPO=ebfio
 
 # Uncomment and change if you want a different branch than main-dev
 # export BRANCH=main-dev

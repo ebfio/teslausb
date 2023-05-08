@@ -22,7 +22,7 @@ server {
          fastcgi_param SCRIPT_FILENAME  $document_root$fastcgi_script_name;
          fastcgi_max_temp_file_size 0;
     }
-    location /TeslaCam/ {
+    location /videos/ {
          root /var/www/html;
          fancyindex on;
          fancyindex_css_href /fancyindex.css;

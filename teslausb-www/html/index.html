@@ -779,7 +779,7 @@ video {
 
   <div class="tab content5">
     <div style="width:100%;height:calc(100% - 4px);">
-      <iframe class="recordings" src="TeslaCam/" onload="hideRecordingParent();"></iframe>
+      <iframe class="recordings" src="videos/" onload="hideRecordingParent();"></iframe>
     </div>
   </div>
 
@@ -901,7 +901,7 @@ function log(what) {
 
 function hideRecordingParent() {
   var i = document.querySelector(".recordings");
-  if (i.contentWindow.location.pathname === "/TeslaCam/") {
+  if (i.contentWindow.location.pathname === "/videos/") {
     var parentlink = i.contentDocument.querySelector("#list tbody tr");
     parentlink.parentElement.removeChild(parentlink);
   }
@@ -1534,7 +1534,7 @@ function inIframe () {
 }
 
 if (inIframe()) {
-  document.location.replace('TeslaCam/');
+  document.location.replace('videos/');
   /* prevent further execution in this iframe and just let it reload*/
   nonExistentFunction();
 }
@@ -1725,7 +1725,7 @@ class VideoSegment {
   }
 
   select() {
-    var prefix = "TeslaCam/" + this.group + "/" + this.sequence + "/";
+    var prefix = "videos/" + this.group + "/" + this.sequence + "/";
     log("===== segment =====");
     freezeVideoElems();
     if (this.left != undefined) {
@@ -1985,7 +1985,7 @@ class VideoSequence {
       return;
     }
 
-    var jsonurl = "TeslaCam/" + this.jsonfile[idx];
+    var jsonurl = "videos/" + this.jsonfile[idx];
     // clear this so we only do this once
     this.jsonfile[idx] = null;
     log("starting json fetch");

@@ -4,9 +4,9 @@
 
 mount /mnt/cam || true
 
-mkdir -p /mnt/cam/TeslaCam/SentryClips
+mkdir -p /mnt/cam/DriveCam
 
-cd /mnt/cam/TeslaCam/SentryClips
+cd /mnt/cam/DriveCam
 
 dir=$(date '+%Y-%m-%d_%H-%M-%S')
 mkdir "$dir"

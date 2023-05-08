@@ -259,8 +259,8 @@ function wait_for_archive_to_be_unreachable () {
 }
 
 function check_if_usb_gadget_is_mounted () {
-  LUNFILE=/sys/kernel/config/usb_gadget/teslausb/configs/c.1/mass_storage.0/lun.0/file
-  if [ -n "$(cat /sys/kernel/config/usb_gadget/teslausb/UDC)" ] &&
+  LUNFILE=/sys/kernel/config/usb_gadget/rivianusb/configs/c.1/mass_storage.0/lun.0/file
+  if [ -n "$(cat /sys/kernel/config/usb_gadget/rivianusb/UDC)" ] &&
      [ -e "$LUNFILE" ] &&
      [ "$(cat $LUNFILE)" = /backingfiles/cam_disk.bin ]
   then
@@ -360,7 +360,7 @@ function clean_cam_mount {
 
   # Remove files, oldest first, until there is at least 20GB of free space
 
-  (cd "${CAM_MOUNT}"; find . -type f -a \( -path './TeslaCam/*' -o -path './TeslaTrackMode/*' \) -printf '%P\0') > /tmp/rmcandidates.txt
+  (cd "${CAM_MOUNT}"; find . -type f -a \( -path './DriveCam/*' -o -path './IncidentCam/*' -o -path './GearGuardVideo/*'\) -printf '%P\0') > /tmp/rmcandidates.txt
   if [ -s /tmp/rmcandidates.txt ]
   then
     (cd "${CAM_MOUNT}"; xargs -a /tmp/rmcandidates.txt -0 ls -cr1) > /tmp/rmcandidatesbytime.txt
@@ -378,8 +378,8 @@ function clean_cam_mount {
   done < /tmp/rmcandidatesbytime.txt
 
   # delete directories that are now empty
-  find "$CAM_MOUNT/TeslaCam/RecentClips" "$CAM_MOUNT/TeslaCam/SavedClips" \
-    "$CAM_MOUNT/TeslaCam/SentryClips" "$CAM_MOUNT/TeslaTrackMode" -mindepth 1 -type d -empty -delete || true
+#  find "$CAM_MOUNT/TeslaCam/RecentClips" "$CAM_MOUNT/TeslaCam/SavedClips" \
+#    "$CAM_MOUNT/TeslaCam/SentryClips" "$CAM_MOUNT/TeslaTrackMode" -mindepth 1 -type d -empty -delete || true
 
   log "done cleaning cam mount"
 }
@@ -404,7 +404,7 @@ function clean_cam_mount {
 function archive_teslacam_clips () {
   log "Checking saved folder count..."
 
-  local -r overlaylower=/mutable/TeslaCam
+  local -r overlaylower=/mutable
   local -r overlayupper=/tmp/cam/upper
   local -r overlaywork=/tmp/cam/work
   local -r overlaymerged=/tmp/cam/merged
@@ -428,22 +428,22 @@ function archive_teslacam_clips () {
   local -a recentclipsopt
   if [ "${ARCHIVE_SAVEDCLIPS:-true}" = "true" ]
   then
-    savedclipsopt=("-path" "./SavedClips/*")
+    savedclipsopt=("-path" "./DriveCam/*")
   else
     savedclipsopt=("-false")
   fi
   if [ "${ARCHIVE_SENTRYCLIPS:-true}" = "true" ]
   then
-    sentryclipsopt=("-o" "-path" "./SentryClips/*")
+    sentryclipsopt=("-o" "-path" "./GearGuardVideo/*")
   fi
   if [ "${ARCHIVE_TRACKMODECLIPS:-true}" = "true" ]
   then
-    trackmodeclipsopt=("-o" "-path" "./TeslaTrackMode/*")
+    trackmodeclipsopt=("-o" "-path" "./IncidentCam/*")
   fi
-  if [ "${ARCHIVE_RECENTCLIPS:-false}" = "true" ]
-  then
-    recentclipsopt=("-o" "-path" "./RecentClips/*")
-  fi
+  # if [ "${ARCHIVE_RECENTCLIPS:-false}" = "true" ]
+  # then
+  #   recentclipsopt=("-o" "-path" "./RecentClips/*")
+  # fi
   (cd "$overlaylower"; find . \( \( "${savedclipsopt[@]}" "${sentryclipsopt[@]}" "${trackmodeclipsopt[@]}" "${recentclipsopt[@]}" \) -type l \) \
         -a -fprintf "$sentrylist" '%P\n')
 
@@ -479,14 +479,14 @@ function archive_teslacam_clips () {
   # apply custom removals/additions
   filterfile "${sentrylist}"
 
-  local -r sentry_count=$(grep -c -v TeslaTrackMode "$sentrylist")
-  local -r trackmode_count=$(grep -c TeslaTrackMode "$sentrylist")
+  local -r sentry_count=$(grep -c -v IncidentCam "$sentrylist")
+  local -r trackmode_count=$(grep -c IncidentCam "$sentrylist")
   local -r ignore_count=$(wc -l < "$ignorelist")
   local -r total_count=$((sentry_count + trackmode_count))
 
   # extract some noteworthy info from the file list
-  local -r saved_event_count=$(grep 'SavedClips/' < "$sentrylist" | sed 's/[^\/]\+$//' | sort -u  | wc -l)
-  local -r sentry_event_count=$(grep 'SentryClips/' < "$sentrylist" | sed 's/[^\/]\+$//' | sort -u  | wc -l)
+  local -r saved_event_count=$(grep 'DriveCam/' < "$sentrylist" | sed 's/[^\/]\+$//' | sort -u  | wc -l)
+  local -r sentry_event_count=$(grep 'GearGuardVideo/' < "$sentrylist" | sed 's/[^\/]\+$//' | sort -u  | wc -l)
 
   local -r event_count=$((saved_event_count + sentry_event_count))
 
@@ -518,23 +518,23 @@ function archive_teslacam_clips () {
     local -r triggerdir=/tmp/triggers
     local -r triggerlist=/tmp/triggers.txt
     rm -rf "${triggerdir}"
-    mkdir -p "${triggerdir}/SentryClips"
-    mkdir -p "${triggerdir}/SavedClips"
-    mkdir -p "${triggerdir}/RecentClips"
+    mkdir -p "${triggerdir}/GearGuardVideo"
+    mkdir -p "${triggerdir}/DriveCam"
+    mkdir -p "${triggerdir}/IncidentCam"
     true > "${triggerlist}"
     if [ -n "${TRIGGER_FILE_SAVED+x}" ]
     then
-      touch "${triggerdir}/SavedClips/${TRIGGER_FILE_SAVED}"
+      touch "${triggerdir}/DriveCam/${TRIGGER_FILE_SAVED}"
       echo "SavedClips/${TRIGGER_FILE_SAVED}" >> "${triggerlist}"
     fi
     if [ -n "${TRIGGER_FILE_SENTRY+x}" ]
     then
-      touch "${triggerdir}/SentryClips/${TRIGGER_FILE_SENTRY}"
+      touch "${triggerdir}/GearGuardVideo/${TRIGGER_FILE_SENTRY}"
       echo "SentryClips/${TRIGGER_FILE_SENTRY}" >> "${triggerlist}"
     fi
     if [ -n "${TRIGGER_FILE_RECENT+x}" ]
     then
-      touch "${triggerdir}/RecentClips/${TRIGGER_FILE_RECENT}"
+      touch "${triggerdir}/IncidentCam/${TRIGGER_FILE_RECENT}"
       echo "SentryClips/${TRIGGER_FILE_RECENT}" >> "${triggerlist}"
     fi
     if [ -n "${TRIGGER_FILE_ANY+x}" ]
@@ -606,10 +606,10 @@ function archive_teslacam_clips () {
   if [[ "$ignore_count" -gt 0 ]]
   then
     (
-      cd "$CAM_MOUNT/TeslaCam"
-      grep -v TeslaTrackMode "$ignorelist" | xargs rm -f
       cd "$CAM_MOUNT"
-      grep TeslaTrackMode "$ignorelist" | xargs rm -f
+      grep -v IncidentCam "$ignorelist" | xargs rm -f
+      cd "$CAM_MOUNT"
+      grep IncidentCam "$ignorelist" | xargs rm -f
     )
   fi
 

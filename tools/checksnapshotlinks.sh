@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-BASE=/mutable/TeslaCam
+BASE=/mutable
 REPAIR=false
 if [ "${1:-}" = "repair" ]
 then
@@ -11,14 +11,14 @@ function recentpathfor {
   recent=${1#*/}
   filename=${recent##*/}
   filedate=${filename:0:10}
-  echo "RecentClips/$filedate/$filename"
+  echo "DriveCam/$filedate/$filename"
 }
 
 find -L /backingfiles/snapshots/ -type f -name \*.mp4 | sort -r | {
   while read -r path
   do
-    name=${path##/*TeslaCam/}
-    if [[ $name == SentryClips/* || $name == SavedClips/* ]]
+    name=$path #${path##/*TeslaCam/}
+    if [[ $name == GearGuardVideo/* || $name == DriveCam/* ]]
     then
       if [ ! -L "$BASE/$name" ]
       then
@@ -42,7 +42,7 @@ find -L /backingfiles/snapshots/ -type f -name \*.mp4 | sort -r | {
           ln -sf "$path" "$recentpath"
         fi
       fi
-    elif [[ $name == RecentClips/* ]]
+    elif [[ $name == DriveCam/* ]]
     then
       recentpath=$BASE/$(recentpathfor "$name")
       if [ ! -L "$recentpath" ]

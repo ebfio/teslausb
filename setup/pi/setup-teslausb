@@ -295,8 +295,10 @@ function create_usb_drive_backing_files () {
   /root/bin/disable_gadget.sh || ret=$?
   if (( (ret == 0) || (ret == 2) )) && mount /mnt/cam
   then
-    mkdir -p /mnt/cam/TeslaCam
-    mkdir -p /mnt/cam/TeslaTrackMode
+    mkdir -p /mnt/cam/DriveCam
+    mkdir -p /mnt/cam/IncidentCam
+    mkdir -p /mnt/cam/GearGuardVideo
+
     touch /mnt/cam/.metadata_never_index
 
     local -r sentrylist_previously_archived=/mutable/sentry_files_archived
@@ -307,8 +309,8 @@ function create_usb_drive_backing_files () {
     # server.
     if [ ! -e "$sentrylist_previously_archived" ] && [ -d "$MUTABLE_MOUNTPOINT/TeslaCam" ]
     then
-      find "$MUTABLE_MOUNTPOINT/TeslaCam" -type l -printf '%P\n' | sort > /tmp/allfiles.txt
-      find /mnt/cam/TeslaCam /mnt/cam/ -type f -printf '%P\n' | sort > /tmp/stilloncard.txt
+      find "$MUTABLE_MOUNTPOINT" -type l -printf '%P\n' | sort > /tmp/allfiles.txt
+      find /mnt/cam /mnt/cam/ -type f -printf '%P\n' | sort > /tmp/stilloncard.txt
       comm -2 -3 /tmp/allfiles.txt /tmp/stilloncard.txt > "$sentrylist_previously_archived"
       rm -f /tmp/allfiles.txt /tmp/stilloncard.txt
     fi

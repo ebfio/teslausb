@@ -7,7 +7,7 @@ then
   echo "error: configfs not found"
   exit 1
 fi
-readonly gadget_root="$configfs_root/usb_gadget/teslausb"
+readonly gadget_root="$configfs_root/usb_gadget/rivianusb"
 
 # USB supports many languages. 0x409 is US English
 readonly lang=0x409
@@ -33,10 +33,10 @@ echo 0x0100 > "$gadget_root/bcdDevice" # v1.0.0
 echo 0x0200 > "$gadget_root/bcdUSB"    # USB 2.0
 mkdir -p "$gadget_root/strings/$lang"
 mkdir -p "$gadget_root/configs/$cfg.1/strings/$lang"
-echo "TeslaUSB-$(grep Serial /proc/cpuinfo | awk '{print $3}')" > "$gadget_root/strings/$lang/serialnumber"
-echo TeslaUSB > "$gadget_root/strings/$lang/manufacturer"
-echo "TeslaUSB Composite Gadget" > "$gadget_root/strings/$lang/product"
-echo "TeslaUSB Config" > "$gadget_root/configs/$cfg.1/strings/$lang/configuration"
+echo "RivianUSB-$(grep Serial /proc/cpuinfo | awk '{print $3}')" > "$gadget_root/strings/$lang/serialnumber"
+echo RivianUSB > "$gadget_root/strings/$lang/manufacturer"
+echo "RivianUSB Composite Gadget" > "$gadget_root/strings/$lang/product"
+echo "RivianUSB Config" > "$gadget_root/configs/$cfg.1/strings/$lang/configuration"
 
 # A bare Raspberry Pi 4 can peak at at over 700 mA during boot, but idles around
 # 450 mA, while a Raspberry Pi 4 with a USB drive can peak at over 1 A during boot
@@ -60,7 +60,7 @@ fi
 mkdir -p "$gadget_root/functions/mass_storage.0"
 
 echo "/backingfiles/cam_disk.bin" > "$gadget_root/functions/mass_storage.0/lun.0/file"
-echo "TeslaUSB CAM $(du -h /backingfiles/cam_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/lun.0/inquiry_string"
+echo "RivianUSB CAM $(du -h /backingfiles/cam_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/lun.0/inquiry_string"
 
 lun="lun.1"
 # one lun is created by default, so we only need to create the 2nd one
@@ -68,7 +68,7 @@ if [ -e "/backingfiles/music_disk.bin" ]
 then
   mkdir -p "$gadget_root/functions/mass_storage.0/${lun}"
   echo "/backingfiles/music_disk.bin" > "$gadget_root/functions/mass_storage.0/${lun}/file"
-  echo "TeslaUSB MUSIC $(du -h /backingfiles/music_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/${lun}/inquiry_string"
+  echo "RivianUSB MUSIC $(du -h /backingfiles/music_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/${lun}/inquiry_string"
   lun="lun.2"
 fi
 
@@ -77,7 +77,7 @@ if [ -e "/backingfiles/boombox_disk.bin" ]
 then
   mkdir -p "$gadget_root/functions/mass_storage.0/${lun}"
   echo "/backingfiles/boombox_disk.bin" > "$gadget_root/functions/mass_storage.0/${lun}/file"
-  echo "TeslaUSB BOOMBOX $(du -h /backingfiles/boombox_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/${lun}/inquiry_string"
+  echo "RivianUSB BOOMBOX $(du -h /backingfiles/boombox_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/${lun}/inquiry_string"
 fi
 
 ln -sf "$gadget_root/functions/mass_storage.0" "$gadget_root/configs/$cfg.1"
